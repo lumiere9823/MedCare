@@ -99,4 +99,36 @@ class PatientController extends Controller
         return view('appointments.userSchedule', compact('appointments'));
     }
 
+    public function calculate(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'weight' => 'required|numeric|min:1',
+            'height' => 'required|numeric|min:0.01',
+        ]);
+
+        // Calculate BMI
+        $weight = $request->input('weight');
+        $height = $request->input('height');
+        $bmi = $weight / ($height * $height);
+
+        // Determine BMI category
+        $category = '';
+        if ($bmi < 18.5) {
+            $category = 'Underweight';
+        } elseif ($bmi >= 18.5 && $bmi < 24.9) {
+            $category = 'Normal weight';
+        } elseif ($bmi >= 25 && $bmi < 29.9) {
+            $category = 'Overweight';
+        } else {
+            $category = 'Obesity';
+        }
+
+        // Prepare the result message
+        $result = "Your BMI is " . round($bmi, 2) . ", which is considered " . $category . ".";
+
+        // Redirect back with result
+        return redirect()->route('calculate.bmi.form')->with('result', $result);
+    }
+
 }

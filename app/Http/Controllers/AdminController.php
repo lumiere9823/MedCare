@@ -70,13 +70,27 @@ class AdminController extends Controller
             'role' => 'required|string',
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'role' => $request->role,
-            'time_slot' => $request->time_slot,
-        ]);
+        // dd($request->all());
+
+        if($request->role === 'doctor') {
+            $request->validate([
+                'time_slot' => 'required|string',
+            ]);
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'role' => $request->role,
+                'time_slot' => $request->time_slot,
+            ]);
+        }else{
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'role' => $request->role,
+            ]);
+        }
 
         return redirect()->route('administrator.dashboard')->with('success', 'User created successfully.');
     }

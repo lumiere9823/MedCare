@@ -16,7 +16,8 @@ use App\Http\Controllers\DrugController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\MedicationController;
-
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DiseaseController;
 Route::get('/', function () {
     return view('home');
 })->name('home');
@@ -46,10 +47,16 @@ Route::prefix('patient')->name('patient.')->group(function () {
     Route::get('/health-info', [PatientController::class, 'viewHealthInfo'])->name('viewHealthInfo');
     Route::get('/book-appointment', [PatientController::class, 'showBookingForm'])->name('bookAppointment');
     Route::post('/book-appointment', [PatientController::class, 'bookAppointment'])->name('storeAppointment');
-    Route::get('/submit-feedback', [PatientController::class, 'showFeedbackForm'])->name('submitFeedback');
+    Route::get('/show-feedback', [PatientController::class, 'showFeedbackForm'])->name('showFeedback');
     Route::post('/submit-feedback', [PatientController::class, 'submitFeedback'])->name('storeFeedback');
     Route::get('/book-appointment/{doctorId}/slots', [PatientController::class, 'getAvailableSlots'])->name('slots');
 });
+
+Route::get('/calculate-bmi', function () {
+    return view('patient.calculateBMI');
+})->name('calculate.bmi.form');
+
+Route::post('/calculate-bmi', [PatientController::class, 'calculate'])->name('calculate.bmi');
 
 Route::get('/appointments/schedule', function () {
     if (Auth::check()) {
@@ -102,12 +109,22 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('medications', MedicationController::class)->except(['create', 'store', 'show','view']);
         Route::get('/medications/create', [MedicationController::class, 'create'])->name('medications.create');
         Route::post('/medications', [MedicationController::class, 'store'])->name('medications.store');
-    Route::get('/medications/view', [MedicationController::class, 'view'])->name('medications.view');
+        Route::get('/medications/view', [MedicationController::class, 'view'])->name('medications.view');
 });
 
 // Payment routes
 Route::post('/make-payment', [PaymentController::class, 'makePayment'])->name('payment.make');
 Route::post('/insurance-reimbursement', [PaymentController::class, 'insuranceReimbursement'])->name('payment.insuranceReimbursement');
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
+Route::get('/diseases', [DiseaseController::class, 'index'])->name('diseases.index');
+Route::get('/diseases/view', [DiseaseController::class, 'viewUser'])->name('diseases.viewUser');
+Route::get('/diseases/create', [DiseaseController::class, 'create'])->name('diseases.create');
+Route::post('/diseases', [DiseaseController::class, 'store'])->name('diseases.store');
+Route::get('/diseases/{id}', [DiseaseController::class, 'show'])->name('diseases.show');
+Route::get('/diseases/{id}/edit', [DiseaseController::class, 'edit'])->name('diseases.edit');
+Route::put('/diseases/{id}', [DiseaseController::class, 'update'])->name('diseases.update');
+Route::delete('/diseases/{id}', [DiseaseController::class, 'destroy'])->name('diseases.destroy');
 
 require __DIR__.'/auth.php';

@@ -35,7 +35,7 @@
 
             <div class="mb-3">
                 <label for="role" class="form-label">Role</label>
-                <select class="form-select" id="role" name="role" required>
+                <select class="form-select" id="role" name="role" required onchange="toggleTimeSlot()">
                     <option value="">Select a role</option>
                     <option value="administrator" {{ old('role', $user->role) == 'administrator' ? 'selected' : '' }}>
                         Administrator</option>
@@ -55,7 +55,8 @@
                 @enderror
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3" id="timeSlotContainer"
+                style="{{ old('role', $user->role) == 'doctor' ? '' : 'display:none;' }}">
                 <label for="time_slot" class="form-label">Working Time Slot</label>
                 <select class="form-select" id="time_slot" name="time_slot" required>
                     <option value="">Select a time slot</option>
@@ -77,4 +78,23 @@
             <button type="submit" class="btn btn-primary">Update User</button>
         </form>
     </div>
+
+    <script>
+        function toggleTimeSlot() {
+            var roleSelect = document.getElementById('role');
+            var timeSlotContainer = document.getElementById('timeSlotContainer');
+            var timeSlotSelect = document.getElementById('time_slot');
+
+            if (roleSelect.value === 'doctor') {
+                timeSlotContainer.style.display = 'block';
+                timeSlotSelect.setAttribute('required', 'required'); // Set required
+            } else {
+                timeSlotContainer.style.display = 'none';
+                timeSlotSelect.removeAttribute('required'); // Remove required
+            }
+        }
+
+        // Call the function on page load to set the initial state
+        window.onload = toggleTimeSlot;
+    </script>
 @endsection
